@@ -1,78 +1,15 @@
 <template>
-  <div>
-    <h1>hi {{ msg }}</h1>
-    <!-- <div @click="add">{{ count }}</div> -->
-    <input type="text" v-model="val" @keypress.enter="addTodo" />
-    <button @click="addTodo">add</button>
-    <button @click="clearTodo" v-if="doneCount > 0">clear</button>
-    <ul>
-      <li v-for="(todo, index) in todos" :key="index">
-        <input type="checkbox" v-model="todo.done" />
-        <span>{{ todo.title }}</span>
-      </li>
-    </ul>
-    <div>
-      <div><input type="checkbox" v-model="allDone" />Select All</div>
-      {{ doneCount }}
-      /
-      {{ todos.length }}
-    </div>
-  </div>
+  <!-- <TodoList title="清单1号" itemkey="todos-bilibili"></TodoList> -->
+  <RateComponent :value="2" @update="notice">电影评分</RateComponent>
 </template>
-<script>
-import { defineComponent } from 'vue'
+<script setup>
+import TodoList from './components/TodoList.vue'
+import RateComponent from './components/RateComponent.vue'
 
-export default defineComponent({
-  data() {
-    return {
-      msg: 'vuejs',
-      count: 1,
-      val: '',
-      todos: localStorage.getItem('todos')
-        ? JSON.parse(localStorage.getItem('todos'))
-        : [
-            { title: '吃饭', done: true },
-            { title: '睡觉', done: false }
-          ]
-    }
-  },
-  watch: {
-    todos: {
-      handler() {
-        localStorage.setItem('todos', JSON.stringify(this.todos))
-      },
-      deep: true,
-      immediate: true
-    }
-  },
-  computed: {
-    allDone: {
-      get() {
-        return this.doneCount === this.todos.length
-      },
-      set(value) {
-        this.todos.forEach((v) => (v.done = value))
-      }
-    },
-    doneCount() {
-      return this.todos.filter((v) => v.done).length
-    }
-  },
-  methods: {
-    add() {
-      this.count++
-    },
-    addTodo() {
-      this.todos.push({
-        title: this.val,
-        done: false
-      })
-      this.val = ''
-    },
-    clearTodo() {
-      this.todos = this.todos.filter((v) => !v.done)
-    }
-  }
-})
+// 1. 组件内部的渲染和逻辑
+// 2. 组件的输入
+// 3. 组件的输出
+function notice(val) {
+  console.log(val)
+}
 </script>
-<style></style>
