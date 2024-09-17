@@ -1,47 +1,78 @@
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <div>
+    <h1>hi {{ msg }}</h1>
+    <!-- <div @click="add">{{ count }}</div> -->
+    <input type="text" v-model="val" @keypress.enter="addTodo" />
+    <button @click="addTodo">add</button>
+    <button @click="clearTodo" v-if="doneCount > 0">clear</button>
+    <ul>
+      <li v-for="(todo, index) in todos" :key="index">
+        <input type="checkbox" v-model="todo.done" />
+        <span>{{ todo.title }}</span>
+      </li>
+    </ul>
+    <div>
+      <div><input type="checkbox" v-model="allDone" />Select All</div>
+      {{ doneCount }}
+      /
+      {{ todos.length }}
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  </div>
 </template>
+<script>
+import { defineComponent } from 'vue'
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+export default defineComponent({
+  data() {
+    return {
+      msg: 'vuejs',
+      count: 1,
+      val: '',
+      todos: localStorage.getItem('todos')
+        ? JSON.parse(localStorage.getItem('todos'))
+        : [
+            { title: '吃饭', done: true },
+            { title: '睡觉', done: false }
+          ]
+    }
+  },
+  watch: {
+    todos: {
+      handler() {
+        localStorage.setItem('todos', JSON.stringify(this.todos))
+      },
+      deep: true,
+      immediate: true
+    }
+  },
+  computed: {
+    allDone: {
+      get() {
+        return this.doneCount === this.todos.length
+      },
+      set(value) {
+        this.todos.forEach((v) => (v.done = value))
+      }
+    },
+    doneCount() {
+      return this.todos.filter((v) => v.done).length
+    }
+  },
+  methods: {
+    add() {
+      this.count++
+    },
+    addTodo() {
+      this.todos.push({
+        title: this.val,
+        done: false
+      })
+      this.val = ''
+    },
+    clearTodo() {
+      this.todos = this.todos.filter((v) => !v.done)
+    }
   }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+})
+</script>
+<style></style>
